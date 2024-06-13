@@ -1,0 +1,5 @@
+# Maping aws name with the right aws account id
+- name: sandpit1
+  account_id: "your aws account id"
+- name: sandpit2
+  account_id: "your aws account id"

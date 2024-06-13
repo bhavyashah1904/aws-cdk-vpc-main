@@ -1,0 +1,188 @@
+vpcName: "vpc-sandpit1"
+ipAddresses: "10.0.0.0/16"
+enable_per_az_nat_gateway: true #If true it will deploy 1 nat gateway for every public subnet
+publicSubnets:
+  - availabilityZone: "a"
+    ipAddress: "10.0.1.0/24"
+    mapPublicIpOnLaunch: true
+  - availabilityZone: "b"
+    ipAddress: "10.0.4.0/24"
+    mapPublicIpOnLaunch: true
+  - availabilityZone: "c"
+    ipAddress: "10.0.7.0/24"
+    mapPublicIpOnLaunch: true
+privateSubnets:
+  - availabilityZone: "a"
+    ipAddress: "10.0.2.0/24"
+  - availabilityZone: "b"
+    ipAddress: "10.0.5.0/24"
+  - availabilityZone: "c"
+    ipAddress: "10.0.8.0/24"
+dataSubnets:
+  - availabilityZone: "a"
+    ipAddress: "10.0.3.0/24"
+  - availabilityZone: "b"
+    ipAddress: "10.0.6.0/24"
+  - availabilityZone: "c"
+    ipAddress: "10.0.9.0/24"
+
+#NACL rules
+#protocal would be in the list ["6" (TCP), "17" (UDP), "1" (ICMP), "58" (ICMP-v6) or "-1" ("All protocol")]
+#https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.AclTrafficConfig.html
+publicSubnetNACLs:
+  - ruleNumber: 651
+    ruleAction: "allow"
+    isIpV4Block: true
+    cidrBlock: "10.0.0.0/16"
+    protocol: "-1"
+    direction: "ingress"
+  - ruleNumber: 1950
+    ruleAction: "allow"
+    isIpV4Block: true
+    cidrBlock: "0.0.0.0/0"
+    protocol: "6"
+    startPort: 80
+    endPort: 80
+    direction: "ingress"
+  - ruleNumber: 1951
+    ruleAction: "allow"
+    isIpV4Block: true
+    cidrBlock: "0.0.0.0/0"
+    protocol: "6"
+    startPort: 443
+    endPort: 443
+    direction: "ingress"
+  - ruleNumber: 2051
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_tcp
+    protocol: "6"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "ingress"
+  - ruleNumber: 2052
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_upd
+    protocol: "17"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "ingress"
+    ## Egress
+  - ruleNumber: 651
+    ruleAction: "allow"
+    cidrBlock: "10.0.0.0/16" #Allow all vpc traffic
+    protocol: "-1"
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 1950
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all http traffic
+    protocol: "6"
+    startPort: 80
+    endPort: 80
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 1951
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all https traffic
+    protocol: "6"
+    startPort: 443
+    endPort: 443
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 2051
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_tcp
+    protocol: "6"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 2052
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_upd
+    protocol: "17"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "egress"
+
+privateSubnetNACLs:
+  - ruleNumber: 651
+    ruleAction: "allow"
+    cidrBlock: "10.0.0.0/16" #Allow all vpc traffic
+    protocol: "-1"
+    isIpV4Block: true
+    direction: "ingress"
+  - ruleNumber: 2051
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_tcp
+    protocol: "6"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "ingress"
+  - ruleNumber: 2052
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all ephemeral_upd
+    protocol: "17"
+    startPort: 1024
+    endPort: 65535
+    isIpV4Block: true
+    direction: "ingress"
+  #Egress
+  - ruleNumber: 651
+    ruleAction: "allow"
+    cidrBlock: "10.0.0.0/16" #Allow all vpc traffic
+    protocol: "-1"
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 1950
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all http traffic
+    protocol: "6"
+    startPort: 80
+    endPort: 80
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 1951
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all https traffic
+    protocol: "6"
+    startPort: 443
+    endPort: 443
+    isIpV4Block: true
+    direction: "egress"
+
+dataSubnetNACLs:
+  - ruleNumber: 651
+    ruleAction: "allow"
+    cidrBlock: "10.0.0.0/16" #Allow all vpc traffic
+    protocol: "-1"
+    isIpV4Block: true
+    direction: "ingress"
+  - ruleNumber: 1950
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow all vpc traffic
+    startPort: 1024
+    endPort: 65535    
+    protocol: "6"
+    isIpV4Block: true
+    direction: "ingress"
+
+  #Egress
+  - ruleNumber: 651
+    ruleAction: "allow"
+    cidrBlock: "10.0.0.0/16" #Allow all vpc traffic
+    protocol: "-1"
+    isIpV4Block: true
+    direction: "egress"
+  - ruleNumber: 1951
+    ruleAction: "allow"
+    cidrBlock: "0.0.0.0/0" #Allow https - if we use vpc endpoint gateway
+    protocol: "6"
+    startPort: 443
+    endPort: 443
+    isIpV4Block: true
+    direction: "egress"
